@@ -1,0 +1,23 @@
+version: "3.2"
+
+services:
+  node:
+    container_name: turnkey-private-blockchain-network
+    image: cerebellumnetwork/turnkey-private-blockchain-network
+    ports:
+      - "9944:9944"
+    command: bash -c "node-template --dev --ws-external"
+  test_scripts:
+    container_name: test_scripts
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      - NODE_URL=ws://node:9944
+      - SMART_CONTRACT_ADDRESS=SMART_CONTRACT_ADDRESS
+      - APP_WALLET_JSON=APP_WALLET_JSON
+      - APP_WALLET_PASSPHRASE=APP_WALLET_PASSPHRASE
+      - DESTINATION_PUBLIC_KEY=DESTINATION_PUBLIC_KEY
+      - AMOUNT=1000000000000000
+      - FEE=1000000000000000
+    command: node dist/index.js
