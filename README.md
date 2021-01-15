@@ -19,14 +19,29 @@ Now you need to deploy Smart Contract using just created application wallet to t
 
 #### 4. Configure script environment variables
 
-Update environment variables in `./docker-compose.yaml` file in this repo. You need to update the following parameters:
+Update environment variables in `./env` file in this repo. You need to update the following parameters:
 ```bash
 SMART_CONTRACT_ADDRESS
 APP_WALLET_JSON
 APP_WALLET_PASSPHRASE
 ```
 #### 5. Run tests
-Now run scripts using command:
+
+**Scenario 1: Generate user's wallet and send assets to it.**
+
+Run first scenario using command:
 ```bash
-docker-compose up -d test_scripts
+docker-compose up -d scenario_1
+```
+**Scenario 2: Fee Abstraction for user's wallet.**
+
+Run second scenario using command:
+```bash
+docker-compose up -d scenario_2
+```
+**Scenario 3: Batch transactions for transfer assets.**
+
+Run third scenario using command:
+```bash
+docker-compose up -d scenario_3
 ```

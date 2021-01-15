@@ -1,27 +1,31 @@
-import {SubstrateService} from './substrate-service';
+import {ScenarioEnum} from "./enum/scenario.enum";
+import {Scenarios_1} from "./scenarios/scenarios_1";
+import {Scenarios_2} from "./scenarios/scenarios_2";
+import {Scenarios_3} from "./scenarios/scenarios_3";
 
 (async () => {
-  console.log('[MAIN] Creating SubstrateService instance...');
+  const scenario = process.argv[2] as ScenarioEnum;
 
-  const service = new SubstrateService();
-  await service.initialize();
-  console.log(`[MAIN] SubstrateService instance has been created and initialized successfully`);
+  switch (scenario) {
+    case ScenarioEnum.SCENARIO_1: {
+      const scenario = new Scenarios_1();
+      await scenario.run();
+      break;
+    }
+    case ScenarioEnum.SCENARIO_2: {
+      const scenario = new Scenarios_2();
+      await scenario.run();
+      break;
+    }
+    case ScenarioEnum.SCENARIO_3: {
+      const scenario = new Scenarios_3();
+      await scenario.run();
+      break;
+    }
 
-  console.log('[MAIN] Generating wallet...');
-  const wallet = service.generateWallet();
-  console.log(`[MAIN] Wallet has been generated successfully. Value is ${JSON.stringify(wallet)}`);
-
-  console.log(`[MAIN] Issuing assets to the user...`);
-  const result = await service.issueAssetToUser(
-    wallet.publicKey,
-    process.env.AMOUNT,
-    process.env.FEE,
-  );
-  console.log(`[MAIN] Issuing assets to user has been completed successfully. Result is ${JSON.stringify(result)}`);
-
-  const balance = await service.getBalance(wallet.publicKey);
-
-  console.log(`[MAIN] Asset balance: ${JSON.stringify(balance)}`);
+    default:
+      throw new Error(`Unknown scenario: ${scenario}`);
+  }
 
   process.exit();
 })();

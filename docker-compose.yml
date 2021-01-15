@@ -7,16 +7,30 @@ services:
     ports:
       - "9944:9944"
     command: bash -c "node-template --dev --ws-external"
-  test_scripts:
-    container_name: test_scripts
+  scenario_1:
+    container_name: scenario_1
+    image: test_scripts
     build:
       context: ./
       dockerfile: Dockerfile
-    environment:
-      - NODE_URL=ws://node:9944
-      - SMART_CONTRACT_ADDRESS=SMART_CONTRACT_ADDRESS
-      - APP_WALLET_JSON=APP_WALLET_JSON
-      - APP_WALLET_PASSPHRASE=APP_WALLET_PASSPHRASE
-      - AMOUNT=1000000000000000
-      - FEE=1000000000000000
-    command: node dist/index.js
+    env_file:
+      - ./.env
+    command: node dist/index.js scenario_1
+  scenario_2:
+    container_name: scenario_2
+    image: test_scripts
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env
+    command: node dist/index.js scenario_2
+  scenario_3:
+    container_name: scenario_3
+    image: test_scripts
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env
+    command: node dist/index.js scenario_3
