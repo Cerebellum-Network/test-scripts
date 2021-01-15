@@ -1,18 +1,32 @@
-# test-scripts
+# Script for testing Cere Turnkey Private Network
 
-1. Up node locally with `docker-compose up -d node`
+This repository supposed to be used for testing Cere Turnkey Private Network. It also consist of some other helpful tools.
 
-2. Deploy assets
-    
-    2.1. [Create Smart Contract artifacts](https://github.com/Cerebellum-Network/private-standalone-network-node/blob/dev/docs/derivative_assets.md#1-create-smart-contract-artifacts)
+#### 1. Up and run Private Node
+In order to start testing Private Network, you need to up and run node locally using command:
+```bash
+docker-compose up -d node
+```
 
-    2.2. [Upload artifacts to the Network](https://github.com/Cerebellum-Network/private-standalone-network-node/blob/dev/docs/derivative_assets.md#2-upload-artifacts-wasm-and-metadata-files-first)
-    
-    2.3. [Deploy Smart Contract to the Network](https://github.com/Cerebellum-Network/private-standalone-network-node/blob/dev/docs/derivative_assets.md#2-upload-artifacts-wasm-and-metadata-files-first)
+#### 2. Create application wallet/account 
 
-3. [Create a new account in the network](https://github.com/Cerebellum-Network/validator-instructions/blob/master/docs/staking_accounts.md#step-1-create-a-stash-account)
+In order to run script you need to have application wallet/account with some funded amount of native tokens to process transactions. Use [Create a new account guide](https://github.com/Cerebellum-Network/validator-instructions/blob/master/docs/staking_accounts.md#step-1-create-a-stash-account) for this purpose.
 
-4. Update environment variables in `docker-compose.yml` from 2 and 3
+#### 3. Deploy Smart Contract
 
-5. Run test scripts with `docker-compose up -d test_scripts`
-    
+Now you need to deploy Smart Contract using just created application wallet to the network using [How to deploy Smart Contract guide](https://github.com/Cerebellum-Network/private-standalone-network-node/blob/dev/docs/derivative_assets.md#how-to-deploy-enterprise-derivative-assets-via-smart-contract).
+
+
+#### 4. Configure script environment variables
+
+Update environment variables in `./docker-compose.yaml` file in this repo. You need to update the following parameters:
+```bash
+SMART_CONTRACT_ADDRESS
+APP_WALLET_JSON
+APP_WALLET_PASSPHRASE
+```
+#### 5. Run tests
+Now run scripts using command:
+```bash
+docker-compose up -d test_scripts
+```

@@ -1,21 +1,27 @@
 import {SubstrateService} from './substrate-service';
 
 (async () => {
-  console.log('Creating SubstrateService instance...');
+  console.log('[MAIN] Creating SubstrateService instance...');
 
   const service = new SubstrateService();
   await service.initialize();
-  console.log(`SubstrateService instance has been created and initialized successfully`);
+  console.log(`[MAIN] SubstrateService instance has been created and initialized successfully`);
 
-  console.log('Generating wallet...');
+  console.log('[MAIN] Generating wallet...');
   const wallet = service.generateWallet();
-  console.log(`Wallet has been generated successfully. Value is ${JSON.stringify(wallet)}`);
+  console.log(`[MAIN] Wallet has been generated successfully. Value is ${JSON.stringify(wallet)}`);
 
-  console.log(`Issuing assets to user...`);
+  console.log(`[MAIN] Issuing assets to the user...`);
   const result = await service.issueAssetToUser(
-    process.env.DESTINATION_PUBLIC_KEY,
+    wallet.publicKey,
     process.env.AMOUNT,
     process.env.FEE,
   );
-  console.log(`Issuing assets to user has been completed successfully. Result is ${JSON.stringify(result)}`);
+  console.log(`[MAIN] Issuing assets to user has been completed successfully. Result is ${JSON.stringify(result)}`);
+
+  const balance = await service.getBalance(wallet.publicKey);
+
+  console.log(`[MAIN] Asset balance: ${JSON.stringify(balance)}`);
+
+  process.exit();
 })();

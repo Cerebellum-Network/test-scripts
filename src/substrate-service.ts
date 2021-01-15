@@ -5,6 +5,9 @@ import {ContractPromise} from '@polkadot/api-contract';
 import {KeyringPair} from '@polkadot/keyring/types';
 import {ApiPromise, WsProvider} from '@polkadot/api';
 import assetSmartContractAbi from './abi/asset-smart-contract.json';
+import {GenerateWalletResponse} from "./model/generate-wallet-response";
+import {IssueAssetResponse} from "./model/issue-asset-response";
+import {GetBalanceResponse} from './model/get-balance-response';
 
 const MNEMONIC_WORDS_COUNT = 15;
 
@@ -27,7 +30,7 @@ export class SubstrateService {
     this.appKeyring.decodePkcs8(process.env.APP_WALLET_PASSPHRASE);
   }
 
-  public generateWallet(): any {
+  public generateWallet(): GenerateWalletResponse {
     const mnemonic = mnemonicGenerate(MNEMONIC_WORDS_COUNT);
 
     const keyring = new Keyring({type: 'sr25519', ss58Format: 2});
@@ -36,10 +39,10 @@ export class SubstrateService {
     const publicKey = u8aToHex(pair.publicKey);
     const privateKey = u8aToHex(mnemonicToMiniSecret(mnemonic));
 
-    return {publicKey, privateKey, mnemonic};
+    return new GenerateWalletResponse(publicKey, privateKey, mnemonic);
   }
 
-  public async issueAssetToUser(destinationAccountPublicKey: string, amount: string, fee: string): Promise<any> {
+  public async issueAssetToUser(destinationAccountPublicKey: string, amount: string, fee: string): Promise<IssueAssetResponse> {
     const gasLimitAuto = -1;
     const anyValue = 0;
     const transferObj = await this.contract.tx.transfer(
@@ -50,16 +53,37 @@ export class SubstrateService {
       fee,
     );
 
-    return new Promise((res, rej) => {
+    return new Promise<IssueAssetResponse>((res, rej) => {
       transferObj
         .signAndSend(this.appKeyring, ({status}) => {
           if (status.isInBlock) {
-            console.log('In block');
+            console.log('[SUBSTRATE_SERVICE] In block');
           } else if (status.isFinalized) {
-            res(status.asFinalized.toHex());
+            res(new IssueAssetResponse(status.asFinalized.toHex()));
           }
         })
         .catch(err => rej(err));
     });
+  }
+
+  public async getBalance(accountKey: string): Promise<GetBalanceResponse> {
+    const gasLimitAuto = -1;
+    const anyValue = 0;
+    const response = await this.contract.query.balanceOf(
+      u8aToHex(this.appKeyring.publicKey),
+      anyValue,
+      gasLimitAuto,
+      accountKey,
+    );
+
+    if (response.result.isOk) {
+      return new GetBalanceResponse(response.output.toString());
+    }
+
+    if (response.result.isErr) {
+      throw new Error(JSON.stringify(response.result.asErr));
+    }
+
+    throw new Error('Something went wrong!');
   }
 }
