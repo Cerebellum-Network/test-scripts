@@ -1,4 +1,4 @@
-# Script for testing Cere Turnkey Private Network
+# Scripts for testing Cere Turnkey Private Network
 
 This repository supposed to be used for testing Cere Turnkey Private Network. It also consist of some other helpful tools.
 
