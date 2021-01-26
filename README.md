@@ -27,21 +27,28 @@ APP_WALLET_PASSPHRASE
 ```
 #### 5. Run tests
 
+**Run Build Command**
+
+Run build command:
+```bash
+docker-compose build
+```
+
 **Scenario 1: Generate user's wallet and send assets to it.**
 
 Run first scenario using command:
 ```bash
-docker-compose up -d scenario_1
+docker-compose up scenario_1
 ```
 **Scenario 2: Fee Abstraction for user's wallet.**
 
 Run second scenario using command:
 ```bash
-docker-compose up -d scenario_2
+docker-compose up scenario_2
 ```
 **Scenario 3: Batch transactions for transfer assets.**
 
 Run third scenario using command:
 ```bash
-docker-compose up -d scenario_3
+docker-compose up scenario_3
 ```
