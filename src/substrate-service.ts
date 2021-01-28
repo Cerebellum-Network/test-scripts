@@ -81,18 +81,18 @@ export class SubstrateService {
         amount
       ),
     ];
-    
-    const transferObj = await this.substrateApi.tx.utility.batch(txs)
 
+    const transferObj = this.substrateApi.tx.utility.batchAll(txs)
+    
     return new Promise<IssueAssetResponse>((res, rej) => {
       transferObj
-        .signAndSend(this.appKeyring, ({ status }) => {
-          if (status.isInBlock) {
-            console.log(`included in ${status.asInBlock}`);
-          } else if (status.isFinalized) {
-            res(new IssueAssetResponse(status.asFinalized.toHex()));
-          }
-        })
+          .signAndSend(this.appKeyring, ({ status }) => {
+            if (status.isInBlock) {
+              console.log(`included in ${status.asInBlock}`);
+            } else if (status.isFinalized) {
+              res(new IssueAssetResponse(status.asFinalized.toHex()));
+            }
+          })
         .catch(err => rej(err));
     });
   }

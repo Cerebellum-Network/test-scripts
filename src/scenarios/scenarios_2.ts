@@ -25,8 +25,7 @@ export class Scenarios_2 implements ScenarioInterface {
     const walletBalance = await service.getBalance(wallet.publicKey);
     console.log(` [MAIN] Balance of wallet is: ${walletBalance}`)
 
-
-
+    // Get fee estimation calculation
     console.log(`[MAIN] Generate fee estimation...`);
     const fee = await service.getFeeEstimate(
       wallet.publicKey,
@@ -34,6 +33,7 @@ export class Scenarios_2 implements ScenarioInterface {
     );
     console.log(`[MAIN] Fee estimation has been completed successfully. Result is ${fee}`);
 
+    // Send with calculated fee
     console.log(`[MAIN] Issuing assets to the user...`);
     const result = await service.issueAssetToUser(
       wallet.publicKey,
