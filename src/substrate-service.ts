@@ -57,9 +57,9 @@ export class SubstrateService {
       transferObj
         .signAndSend(this.appKeyring, ({status}) => {
           if (status.isInBlock) {
-            console.log('[SUBSTRATE_SERVICE] In block');
-          } else if (status.isFinalized) {
-            res(new IssueAssetResponse(status.asFinalized.toHex()));
+            const hash = status.asInBlock.toHex();
+            console.log('[SUBSTRATE_SERVICE] In block: ', hash);
+            res(new IssueAssetResponse(hash));
           }
         })
         .catch(err => rej(err));

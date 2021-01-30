@@ -2,6 +2,9 @@ import {ScenarioEnum} from "./enum/scenario.enum";
 import {Scenarios_1} from "./scenarios/scenarios_1";
 import {Scenarios_2} from "./scenarios/scenarios_2";
 import {Scenarios_3} from "./scenarios/scenarios_3";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 (async () => {
   const scenario = process.argv[2] as ScenarioEnum;
