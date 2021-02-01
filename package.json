@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start:scenario_1": "nodemon --exec \"ts-node ./src/index.ts scenario_1\"",
+    "start:scenario_2": "nodemon --exec \"ts-node ./src/index.ts scenario_2\"",
+    "start:scenario_3": "nodemon --exec \"ts-node ./src/index.ts scenario_3\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -11,6 +14,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^14.14.20",
+    "ts-node": "^9.1.1",
     "typescript": "^4.1.3"
   },
   "dependencies": {
@@ -19,6 +23,7 @@
     "@polkadot/keyring": "^5.2.3",
     "@polkadot/util": "^5.2.3",
     "@polkadot/util-crypto": "^5.2.3",
-    "@polkadot/wasm-crypto": "^3.1.1"
+    "@polkadot/wasm-crypto": "^3.1.1",
+    "dotenv": "^8.2.0"
   }
 }
