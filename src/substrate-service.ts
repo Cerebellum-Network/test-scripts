@@ -66,21 +66,16 @@ export class SubstrateService {
     });
   }
 
-  public async issueAssetToUserBatch(destinationAccountPublicKey: string, amount: string, key_2: string, key_3: string): Promise<IssueAssetResponse> {
-    const txs = [
-      await this.substrateApi.tx.balances.transfer(
-        destinationAccountPublicKey,
+  public async issueAssetToUserBatch(amount: string, wallets: Array<string>): Promise<IssueAssetResponse> {
+    let i
+    let txs = []
+    for (i = 0; i < wallets.length; i++) {
+      let tx = this.substrateApi.tx.balances.transfer(
+        wallets[i],
         amount
-      ),
-      await this.substrateApi.tx.balances.transfer(
-        key_2,
-        amount
-      ),
-      await this.substrateApi.tx.balances.transfer(
-        key_3,
-        amount
-      ),
-    ];
+      )
+      txs.push(tx)
+    }
 
     const transferObj = this.substrateApi.tx.utility.batchAll(txs)
     
@@ -124,12 +119,6 @@ export class SubstrateService {
       amount
     ).paymentInfo(this.appKeyring)
     
-    console.log(`
-      class=${info.class.toString()},
-      weight=${info.weight.toString()},
-      partialFee=${info.partialFee.toHuman()}
-    `);
-
     if (info.partialFee) {
       return info.partialFee.toBn();
     }

@@ -3,13 +3,6 @@ import {ScenarioInterface} from "./scenario-interface";
 
 export class Scenarios_2 implements ScenarioInterface {
   async run() {
-        /*
-      TODO: Implement Scenario 2 [Abstract Fee]:
-        * Create user's wallet
-        * Send small amount of native tokens to the user
-        * Estimate fees using this link: https://github.com/Cerebellum-Network/private-standalone-network-node/blob/dev/docs/fee_abstraction.md
-        * Put estimated fee parameter to the `transfer` function
-    */
     console.log('[MAIN] Creating SubstrateService instance scenario 2...');
 
     const service = new SubstrateService();
@@ -29,7 +22,7 @@ export class Scenarios_2 implements ScenarioInterface {
     console.log(`[MAIN] Generate fee estimation...`);
     const fee = await service.getFeeEstimate(
       wallet.publicKey,
-      process.env.SCENARIO_2_AMOUNT,
+      process.env.AMOUNT,
     );
     console.log(`[MAIN] Fee estimation has been completed successfully. Result is ${fee}`);
 
@@ -37,7 +30,7 @@ export class Scenarios_2 implements ScenarioInterface {
     console.log(`[MAIN] Issuing assets to the user...`);
     const result = await service.issueAssetToUser(
       wallet.publicKey,
-      process.env.SCENARIO_2_AMOUNT,
+      process.env.AMOUNT,
       fee
     );
     console.log(`[MAIN] Issuing assets to user has been completed successfully. Result is ${JSON.stringify(result)}`);
