@@ -66,6 +66,31 @@ export class SubstrateService {
     });
   }
 
+  public async issueAssetToUserBatch(amount: string, wallets: Array<string>): Promise<IssueAssetResponse> {
+    let txs = [];
+    for (let i = 0; i < wallets.length; i++) {
+      let tx = this.substrateApi.tx.balances.transfer(
+        wallets[i],
+        amount
+      );
+      txs.push(tx);
+    }
+
+    const transferObj = this.substrateApi.tx.utility.batchAll(txs)
+    
+    return new Promise<IssueAssetResponse>((res, rej) => {
+      transferObj
+          .signAndSend(this.appKeyring, ({ status }) => {
+            if (status.isInBlock) {
+              console.log(`included in ${status.asInBlock}`);
+            } else if (status.isFinalized) {
+              res(new IssueAssetResponse(status.asFinalized.toHex()));
+            }
+          })
+        .catch(err => rej(err));
+    });
+  }
+
   public async getBalance(accountKey: string): Promise<GetBalanceResponse> {
     const gasLimitAuto = -1;
     const anyValue = 0;
@@ -82,6 +107,23 @@ export class SubstrateService {
 
     if (response.result.isErr) {
       throw new Error(JSON.stringify(response.result.asErr));
+    }
+
+    throw new Error('Something went wrong!');
+  }
+
+  public async getFeeEstimate(destinationAccountPublicKey: string, amount: string): Promise<any> {
+    let info = await this.substrateApi.tx.balances.transfer(
+      destinationAccountPublicKey,
+      amount
+    ).paymentInfo(this.appKeyring)
+    
+    if (info.partialFee) {
+      return info.partialFee.toBn();
+    }
+
+    if (!info.partialFee) {
+      throw new Error("Error estimating fees!");
     }
 
     throw new Error('Something went wrong!');

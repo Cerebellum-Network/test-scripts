@@ -29,19 +29,25 @@ APP_WALLET_PASSPHRASE
 
 **Scenario 1: Generate user's wallet and send assets to it.**
 
+Scenario 1 contains implementation of basic asset transfer.
+
 Run first scenario using command:
 ```bash
-docker-compose up -d scenario_1
+docker-compose up scenario_1
 ```
 **Scenario 2: Fee Abstraction for user's wallet.**
 
+Scenario 2 contains implementation of fee abstraction.
+
 Run second scenario using command:
 ```bash
-docker-compose up -d scenario_2
+docker-compose up scenario_2
 ```
 **Scenario 3: Batch transactions for transfer assets.**
 
+Scenario 3 contains implementation of batch tx call.
+
 Run third scenario using command:
 ```bash
-docker-compose up -d scenario_3
+docker-compose up scenario_3
 ```
