@@ -67,14 +67,13 @@ export class SubstrateService {
   }
 
   public async issueAssetToUserBatch(amount: string, wallets: Array<string>): Promise<IssueAssetResponse> {
-    let i
-    let txs = []
-    for (i = 0; i < wallets.length; i++) {
+    let txs = [];
+    for (let i = 0; i < wallets.length; i++) {
       let tx = this.substrateApi.tx.balances.transfer(
         wallets[i],
         amount
-      )
-      txs.push(tx)
+      );
+      txs.push(tx);
     }
 
     const transferObj = this.substrateApi.tx.utility.batchAll(txs)

@@ -1,6 +1,5 @@
 import {SubstrateService} from "../substrate-service";
 import {ScenarioInterface} from "./scenario-interface";
-import API from '@polkadot/api';
 
 export class Scenarios_3 implements ScenarioInterface {
   async run() {
@@ -40,7 +39,5 @@ export class Scenarios_3 implements ScenarioInterface {
 
     const bananaBalance = await service.getBalance(bob.publicKey);
     console.log(`[MAIN] Asset balance: ${JSON.stringify(bananaBalance)}`);
-
-    
   }
 }
