@@ -4,14 +4,17 @@ import {Keyring} from '@polkadot/keyring';
 import {ContractPromise} from '@polkadot/api-contract';
 import {KeyringPair} from '@polkadot/keyring/types';
 import {ApiPromise, WsProvider} from '@polkadot/api';
-import assetSmartContractAbi from './abi/asset-smart-contract.json';
-import {GenerateWalletResponse} from "./model/generate-wallet-response";
-import {IssueAssetResponse} from "./model/issue-asset-response";
-import {GetBalanceResponse} from './model/get-balance-response';
+import assetSmartContractAbi from '../abi/asset-smart-contract.json';
+import {GenerateWalletResponse} from "../model/generate-wallet-response";
+import {IssueAssetResponse} from "../model/issue-asset-response";
+import {GetBalanceResponse} from '../model/get-balance-response';
+import Logger from './../services/logger';
 
 const MNEMONIC_WORDS_COUNT = 15;
 
 export class SubstrateService {
+  private logger = new Logger(SubstrateService.name);
+
   private contract: ContractPromise;
 
   private appKeyring: KeyringPair;
@@ -58,7 +61,7 @@ export class SubstrateService {
         .signAndSend(this.appKeyring, ({status}) => {
           if (status.isInBlock) {
             const hash = status.asInBlock.toHex();
-            console.log('[SUBSTRATE_SERVICE] In block: ', hash);
+            this.logger.log(`In block: ${hash}`);
             res(new IssueAssetResponse(hash));
           }
         })
@@ -76,13 +79,13 @@ export class SubstrateService {
       txs.push(tx);
     }
 
-    const transferObj = this.substrateApi.tx.utility.batchAll(txs)
+    const transferObj = this.substrateApi.tx.utility.batchAll(txs);
     
     return new Promise<IssueAssetResponse>((res, rej) => {
       transferObj
           .signAndSend(this.appKeyring, ({ status }) => {
             if (status.isInBlock) {
-              console.log(`included in ${status.asInBlock}`);
+              this.logger.log(`included in ${status.asInBlock}`);
             } else if (status.isFinalized) {
               res(new IssueAssetResponse(status.asFinalized.toHex()));
             }
@@ -116,7 +119,7 @@ export class SubstrateService {
     let info = await this.substrateApi.tx.balances.transfer(
       destinationAccountPublicKey,
       amount
-    ).paymentInfo(this.appKeyring)
+    ).paymentInfo(this.appKeyring);
     
     if (info.partialFee) {
       return info.partialFee.toBn();
