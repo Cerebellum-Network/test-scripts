@@ -51,3 +51,10 @@ Run third scenario using command:
 ```bash
 docker-compose up scenario_3
 ```
+**Scenario 4: Issue Restricted Assets.**
+
+Scenario 4 contains implementation of issuing of Restricted Assets.
+
+Run fourth scenario using command:
+```bash
+docker-compose up scenario_4
