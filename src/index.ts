@@ -17,11 +17,13 @@ dotenv.config();
       await scenario.run();
       break;
     }
+
     case ScenarioEnum.SCENARIO_2: {
       const scenario = new Scenarios_2();
       await scenario.run();
       break;
     }
+
     case ScenarioEnum.SCENARIO_3: {
       const scenario = new Scenarios_3();
       await scenario.run();
