@@ -58,3 +58,12 @@ Scenario 4 contains implementation of issuing of Restricted Assets.
 Run fourth scenario using command:
 ```bash
 docker-compose up scenario_4
+```
+**Scenario 5: Data transaction.**
+
+Scenario 5 contains implementation of submitting of data transaction.
+
+Run fifth scenario using command:
+```bash
+docker-compose up scenario_5
+```
