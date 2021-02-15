@@ -1,3 +1,5 @@
+import {LoggerInterface} from "./logger-interface";
+
 export default class Logger implements LoggerInterface {
   readonly namespace: string;
 
