@@ -1,17 +1,17 @@
-import { u8aToHex } from "@polkadot/util";
-import { mnemonicGenerate, mnemonicToMiniSecret } from "@polkadot/util-crypto";
-import { Keyring } from "@polkadot/keyring";
-import { ContractPromise } from "@polkadot/api-contract";
-import { KeyringPair } from "@polkadot/keyring/types";
-import { ApiPromise, WsProvider } from "@polkadot/api";
+import {u8aToHex} from "@polkadot/util";
+import {mnemonicGenerate, mnemonicToMiniSecret} from "@polkadot/util-crypto";
+import {Keyring} from "@polkadot/keyring";
+import {ContractPromise} from "@polkadot/api-contract";
+import {KeyringPair} from "@polkadot/keyring/types";
+import {ApiPromise, WsProvider} from "@polkadot/api";
 import assetSmartContractAbi from "../abi/asset-smart-contract.json";
-import { GenerateWalletResponse } from "../model/generate-wallet-response";
-import { IssueAssetResponse } from "../model/issue-asset-response";
-import { GetBalanceResponse } from "../model/get-balance-response";
-import {issueRestrictiveTime } from '../model/restrictive-asset-time';
+import {GenerateWalletResponse} from "../model/generate-wallet-response";
+import {IssueAssetResponse} from "../model/issue-asset-response";
+import {GetBalanceResponse} from "../model/get-balance-response";
+import {IssueRestrictiveTime} from "../model/restrictive-asset-time";
 import Logger from "./../services/logger";
-import { blake2AsU8a } from "@polkadot/util-crypto";
-import { GenericEventData, Struct } from "@polkadot/types";
+import {blake2AsU8a} from "@polkadot/util-crypto";
+import {GenericEventData} from "@polkadot/types";
 
 const MNEMONIC_WORDS_COUNT = 15;
 
@@ -152,7 +152,12 @@ export class SubstrateService {
     throw new Error("Something went wrong!");
   }
 
-  public async issueRestritiveAsset(destination: string, amount: string, timeLimit: string, fee: string): Promise<IssueAssetResponse>{
+  public async issueRestritiveAsset(
+    destination: string,
+    amount: string,
+    timeLimit: string,
+    fee: string
+  ): Promise<IssueAssetResponse> {
     const gasLimitAuto = -1;
     const anyValue = 0;
     const transferObj = await this.contract.tx.issueRestrictedAsset(
@@ -178,7 +183,9 @@ export class SubstrateService {
     });
   }
 
-  public async getRestritiveTime(address: string): Promise<issueRestrictiveTime>{
+  public async getRestritiveTime(
+    address: string
+  ): Promise<IssueRestrictiveTime> {
     const gasLimitAuto = -1;
     const anyValue = 0;
     const response = await this.contract.query.getIssueRestrictiveAsset(
@@ -189,7 +196,7 @@ export class SubstrateService {
     );
 
     if (response.result.isOk) {
-      return new issueRestrictiveTime(response.output.toString());
+      return new IssueRestrictiveTime(response.output.toString());
     }
 
     if (response.result.isErr) {
@@ -198,6 +205,7 @@ export class SubstrateService {
 
     throw new Error("Something went wrong!");
   }
+
   public async sendData(
     destination: string,
     data: string
@@ -242,7 +250,6 @@ export class SubstrateService {
     ]);
 
     const { parentHash, number, stateRoot, extrinsicsRoot } = block.header;
-
     const onInitialize = { events: [] as ISanitizedEvent[] };
     const onFinalize = { events: [] as ISanitizedEvent[] };
 
@@ -255,7 +262,7 @@ export class SubstrateService {
       return { type, index, value };
     });
 
-    const defaultSuccess = typeof events === "string" ? events : false;
+    const defaultSuccess = typeof events === 'string' ? events : false;
     const extrinsics = block.extrinsics.map((extrinsic) => {
       const {
         method,
@@ -264,18 +271,17 @@ export class SubstrateService {
         signer,
         isSigned,
         tip,
-        args,
+        args
       } = extrinsic;
-      const convertedHash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
+      const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
 
       return {
         method: `${method.section}.${method.method}`,
         signature: isSigned ? { signature, signer } : null,
         nonce,
         args,
-        // newArgs: this.parseGenericCall(method).args,
         tip,
-        hash: convertedHash,
+        hash,
         info: {},
         events: [] as ISanitizedEvent[],
         success: defaultSuccess,
@@ -284,8 +290,8 @@ export class SubstrateService {
       };
     });
 
-    const successEvent = "system.ExtrinsicSuccess";
-    const failureEvent = "system.ExtrinsicFailed";
+    const successEvent = 'system.ExtrinsicSuccess';
+    const failureEvent = 'system.ExtrinsicFailed';
 
     if (Array.isArray(events)) {
       for (const record of events) {
@@ -293,17 +299,14 @@ export class SubstrateService {
         const sanitizedEvent = {
           method: `${event.section}.${event.method}`,
           data: event.data,
-        } as any;
+        };
 
         if (phase.isApplyExtrinsic) {
           const extrinsicIdx = phase.asApplyExtrinsic.toNumber();
           const extrinsic = extrinsics[extrinsicIdx];
 
           if (!extrinsic) {
-            this.logger.error(
-              `Block ${block.header.number.toNumber()} ${blockHash}: Missing extrinsic ${extrinsicIdx}`
-            );
-            // eslint-disable-next-line no-continue
+            console.error(`Block ${block.header.number.toNumber()} ${blockHash}: Missing extrinsic ${extrinsicIdx}`);
             continue;
           }
 
@@ -318,13 +321,13 @@ export class SubstrateService {
             const sanitizedData = event.data.toJSON() as any[];
 
             for (const data of sanitizedData) {
-              // eslint-disablRegistrye-next-line @typescript-eslint/no-unsafe-member-access
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
               if (data && data.paysFee) {
                 extrinsic.paysFee =
                   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                   data.paysFee === true ||
                   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-                  data.paysFee === "Yes";
+                  data.paysFee === 'Yes';
 
                 break;
               }
@@ -338,22 +341,6 @@ export class SubstrateService {
           onInitialize.events.push(sanitizedEvent);
         }
       }
-    }
-
-    // The genesis block is a special case with little information associated with it.
-    if (parentHash.every((byte) => !byte)) {
-      return {
-        number,
-        blockHash,
-        parentHash,
-        stateRoot,
-        extrinsicsRoot,
-        authorId,
-        logs,
-        onInitialize,
-        extrinsics,
-        onFinalize,
-      };
     }
 
     return {

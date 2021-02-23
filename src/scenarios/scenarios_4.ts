@@ -1,5 +1,5 @@
-import { SubstrateService } from "../services/substrate-service";
-import { ScenarioInterface } from "./scenario-interface";
+import {SubstrateService} from "../services/substrate-service";
+import {ScenarioInterface} from "./scenario-interface";
 import Logger from "./../services/logger";
 
 export class Scenarios_4 implements ScenarioInterface {
@@ -15,7 +15,6 @@ export class Scenarios_4 implements ScenarioInterface {
       `SubstrateService instance has been created and initialized successfully`
     );
 
-    // Generating Wallets
     this.logger.log("Generating wallet...");
     const alice = service.generateWallet();
     this.logger.log(

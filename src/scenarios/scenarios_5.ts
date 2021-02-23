@@ -1,16 +1,11 @@
-import { SubstrateService } from "../services/substrate-service";
-import { ScenarioInterface } from "./scenario-interface";
+import {SubstrateService} from "../services/substrate-service";
+import {ScenarioInterface} from "./scenario-interface";
 import Logger from "./../services/logger";
 
 export class Scenarios_5 implements ScenarioInterface {
   logger = new Logger(Scenarios_5.name);
 
   async run() {
-    /*
-       TODO: Implement Scenario 5 [Send Data Transaction]:
-         * Create 3 user wallets
-         * Sends Data transaction for each account
-     */
     this.logger.log("Creating SubstrateService instance scenario 5...");
 
     const service = new SubstrateService();
@@ -20,7 +15,6 @@ export class Scenarios_5 implements ScenarioInterface {
       `SubstrateService instance has been created and initialized successfully`
     );
 
-    // Generating Wallets
     this.logger.log("Generating wallet...");
     const wallet = service.generateWallet();
     this.logger.log(
