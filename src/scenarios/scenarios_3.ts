@@ -12,7 +12,6 @@ export class Scenarios_3 implements ScenarioInterface {
     await service.initialize();
     this.logger.log(`SubstrateService instance has been created and initialized successfully`);
 
-    // Generating Wallets
     this.logger.log('Generating wallet...');
     const alice = service.generateWallet();
     this.logger.log(`Wallet has been generated successfully. Value is ${JSON.stringify(alice)}`);
