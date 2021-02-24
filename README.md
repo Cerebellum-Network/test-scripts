@@ -76,4 +76,4 @@ Run fifth scenario using command:
 docker-compose up scenario_5
 ```
 # License 
-License info can be found in the [LICENSE section](./docs/LICENSE.md).
+License info can be found in the [LICENSE section](./LICENSE.md).
