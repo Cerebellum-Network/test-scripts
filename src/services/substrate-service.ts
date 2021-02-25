@@ -210,7 +210,7 @@ export class SubstrateService {
     destination: string,
     data: string
   ): Promise<IssueAssetResponse> {
-    let txnObj = await this.substrateApi.tx.templateModule.sendData(
+    let txnObj = await this.substrateApi.tx.cereDdcModule.sendData(
       destination,
       data
     );
@@ -231,7 +231,7 @@ export class SubstrateService {
     const { extrinsics } = await this.fetchBlockData(blockHash);
     return new Promise((resolve, reject) => {
       extrinsics.forEach((transaction) => {
-        if (transaction.method === "templateModule.sendData") {
+        if (transaction.method === "cereDdcModule.sendData") {
           let data: string = transaction.args[1].toString();
           const convert = (from, to) => (str) =>
             Buffer.from(str, from).toString(to);
