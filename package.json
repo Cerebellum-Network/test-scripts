@@ -9,6 +9,7 @@
     "start:scenario_3": "nodemon --exec \"ts-node ./src/index.ts scenario_3\"",
     "start:scenario_4": "nodemon --exec \"ts-node ./src/index.ts scenario_4\"",
     "start:scenario_5": "nodemon --exec \"ts-node ./src/index.ts scenario_5\"",
+    "start:scenario_6": "nodemon --exec \"ts-node ./src/index.ts scenario_6\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
