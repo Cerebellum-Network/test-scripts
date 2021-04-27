@@ -18,7 +18,6 @@ In order to run script you need to have application wallet/account with some fun
 
 Now you need to deploy Smart Contract using just created application wallet to the network using [How to deploy Smart Contract guide](https://github.com/Cerebellum-Network/private-standalone-network-node/blob/dev/docs/derivative_assets.md#how-to-deploy-enterprise-derivative-assets-via-smart-contract).
 
-
 ### 4. Configure script environment variables
 
 Update environment variables in `./env` file in this repo. You need to update the following parameters:
@@ -27,13 +26,8 @@ SMART_CONTRACT_ADDRESS
 APP_WALLET_JSON
 APP_WALLET_PASSPHRASE
 ```
-### 5. Run tests locally
-In order to run 1st scenario, use the command:
-```bash
-nvm exec npm run start:scenario_1 
-```
 
-### 6. Run tests using docker-compose
+### 5. Run tests using docker-compose
 
 **Scenario 1: Generate user's wallet and send assets to it.**
 
