@@ -28,20 +28,32 @@ export class SubstrateService {
 
   private substrateApi: ApiPromise;
 
-  public async initialize(): Promise<void> {
-    this.substrateApi = await ApiPromise.create({
-      provider: new WsProvider(process.env.NODE_URL),
-    });
+  public async initialize(customTypes?): Promise<void> {
+    if (customTypes) {
+      this.substrateApi = await ApiPromise.create({
+        provider: new WsProvider(process.env.NODE_URL),
+        types: customTypes,
+      });
+    } else {
+      this.substrateApi = await ApiPromise.create({
+        provider: new WsProvider(process.env.NODE_URL),
+      });
+    }
     await this.substrateApi.isReady;
-    this.contract = new ContractPromise(
-      this.substrateApi,
-      assetSmartContractAbi,
-      process.env.SMART_CONTRACT_ADDRESS
-    );
+  }
 
+  public initializeSmartContract() {
+    this.contract = new ContractPromise(
+        this.substrateApi,
+        assetSmartContractAbi,
+        process.env.SMART_CONTRACT_ADDRESS
+    );
+  }
+
+  public initializeKeyring() {
     const keyring = new Keyring({ type: "sr25519" });
     this.appKeyring = keyring.addFromJson(
-      JSON.parse(process.env.APP_WALLET_JSON)
+        JSON.parse(process.env.APP_WALLET_JSON)
     );
     this.appKeyring.decodePkcs8(process.env.APP_WALLET_PASSPHRASE);
     console.log(this.appKeyring.address);
@@ -355,5 +367,22 @@ export class SubstrateService {
       extrinsics,
       onFinalize,
     };
+  }
+
+  public async transfer(from: KeyringPair, to: string, value: number) {
+    const { nonce } = await this.substrateApi.query.system.account(from.address);
+    return new Promise((resolve, reject) => {
+      this.substrateApi.tx.balances
+          .transfer(to, value)
+          .signAndSend(from, { nonce }, ({ status }) => {
+            if (status.isInBlock) {
+              this.logger.log(`Included in ${status.asInBlock}`);
+              resolve(status.asInBlock.toHex());
+            } else if (status.isFinalized) {
+              this.logger.log(`The transaction is Finalized ${status.asFinalized}`);
+            }
+          })
+          .catch((err) => reject(err));
+    });
   }
 }
