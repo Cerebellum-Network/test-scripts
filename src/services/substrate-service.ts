@@ -390,4 +390,9 @@ export class SubstrateService {
     const electedInfo = await this.substrateApi.derive.staking.electedInfo();
     return electedInfo;
   }
+
+  public async fetchRewards(blockNumber) {
+    const blockHash = await this.substrateApi.rpc.chain.getBlockHash(blockNumber);
+    return blockHash
+  }
 }
