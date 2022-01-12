@@ -2,9 +2,26 @@ import {ScenarioInterface} from './scenario-interface';
 import Logger from '../services/logger';
 import {SubstrateService} from '../services/substrate-service';
 import cereTypes from './cere-network-type.json';
+const CERE_DECIMAL = 10;
 
+type EntityObject = {
+  validator?: string;
+  validatorStake?: number;
+  nominators?: {who: string; value: number; earned: number}[];
+  eraRewardPoint?: number;
+  validatorPoolEarning?: number;
+  earnedTokenPerStakedToken?: number;
+  totalStake?: number;
+  validatorEarning?: number;
+};
 export class Scenarios_7 implements ScenarioInterface {
   logger = new Logger(Scenarios_7.name);
+
+  public entity: EntityObject[] = [];
+  public totalEraRewardPoints: number;
+  public validatorReward: number;
+  public treasuryReward: number;
+  public tokenPerPoint: number;
 
   public async run() {
     this.logger.log(`Starting scenario 7...`);
@@ -13,16 +30,62 @@ export class Scenarios_7 implements ScenarioInterface {
     const service = new SubstrateService();
     await service.initialize(cereTypes);
 
-    const result = [];
+    await this.fetchValidatorAndNominator(service);
+    await this.eraRewards(service, 228);
+    await this.fetchRewards(service);
+
+    this.tokenPerPoint = this.validatorReward / 10 ** CERE_DECIMAL / Number(this.totalEraRewardPoints);
+    await this.calculate();
+
+    this.logger.log(`Report ${JSON.stringify(this.entity)}`);
+    this.entity.forEach((e) => this.logger.log(JSON.stringify(e.nominators)));
+  }
+
+  private async fetchValidatorAndNominator(service): Promise<any> {
     const electedInfo = await service.fetchElectedInfo();
     electedInfo.info.forEach((element) => {
-      result.push({validator: element.accountId, nominators: element.exposure.others});
+      const validator = element.accountId.toString();
+      const vs = Number(element.exposure.own) / 10 ** CERE_DECIMAL;
+      const totalStake = Number(element.exposure.total) / 10 ** CERE_DECIMAL;
+      const nominators = element.exposure.others.map((e) => {
+        return {
+          who: e.who.toString(),
+          value: e.value.toNumber() / 10 ** 10,
+        };
+      });
+      this.entity.push({
+        validator,
+        nominators: nominators,
+        validatorStake: vs,
+        totalStake: totalStake,
+      });
     });
-    console.log(`Validator and Nominator: ${JSON.stringify(result)}`);
+  }
 
-    let validatorReward;
-    let treasuryReward;
+  private async eraRewards(service, eraIndex): Promise<any> {
+    const eraPoints = await service.fetchEraPoints(eraIndex);
+    this.totalEraRewardPoints = eraPoints.get('total');
+    const validatorEraPoints = eraPoints.get('individual');
+    // console.log(`validator ${validatorEraPoints}`)
 
+    // console.log(validatorEraPoints['5FyBTnGbqmVRcfnfCta5AotFrUD7JM9H3DMgsSH9LJHrsENq'])
+    // Object.entries(validatorEraPoints).forEach(item =>
+    //   console.log(`111 ${JSON.stringify(item)}`))
+
+    let points = 138960;
+
+    this.entity.map((e) => {
+      if (e.validator === '5FyBTnGbqmVRcfnfCta5AotFrUD7JM9H3DMgsSH9LJHrsENq') {
+        e.eraRewardPoint = 138960;
+      } else {
+        e.eraRewardPoint = 141140;
+      }
+    });
+
+    this.logger.log(JSON.stringify(this.entity));
+  }
+
+  private async fetchRewards(service): Promise<any> {
     const rewardsInfo = await service.fetchRewards(3265992);
     const blockData = await service.fetchBlockData(rewardsInfo.toString());
 
@@ -30,12 +93,25 @@ export class Scenarios_7 implements ScenarioInterface {
 
     events.forEach((event) => {
       if (event.method == 'staking.EraPayout') {
-        validatorReward = event.data[1];
-        treasuryReward = event.data[2];
+        this.validatorReward = event.data[1];
+        this.treasuryReward = event.data[2];
       }
     });
+  }
 
-    console.log(`validatorReward ${validatorReward / 10 ** 10}`);
-    console.log(`treasuryReward ${treasuryReward / 10 ** 10}`);
+  private async calculate() {
+    this.entity.map((e) => {
+      const validatorPoolEarning = this.tokenPerPoint * e.eraRewardPoint;
+      e.validatorPoolEarning = validatorPoolEarning;
+      const earnedTokenPerStakedToken = validatorPoolEarning / e.totalStake;
+      e.earnedTokenPerStakedToken = earnedTokenPerStakedToken;
+      const validatorEarning = e.validatorStake * e.earnedTokenPerStakedToken;
+      e.validatorEarning = validatorEarning;
+
+      e.nominators.map((nominator) => {
+        const earned = nominator.value * e.earnedTokenPerStakedToken;
+        nominator.earned = earned;
+      });
+    });
   }
 }

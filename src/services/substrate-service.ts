@@ -395,4 +395,9 @@ export class SubstrateService {
     const blockHash = await this.substrateApi.rpc.chain.getBlockHash(blockNumber);
     return blockHash
   }
+
+  public async fetchEraPoints(eraIndex) {
+    const eraPoints = await this.substrateApi.query.staking.erasRewardPoints(eraIndex);
+    return eraPoints
+  }
 }
