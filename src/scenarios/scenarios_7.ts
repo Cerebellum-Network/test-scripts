@@ -19,5 +19,23 @@ export class Scenarios_7 implements ScenarioInterface {
       result.push({validator: element.accountId, nominators: element.exposure.others});
     });
     console.log(`Validator and Nominator: ${JSON.stringify(result)}`);
+
+    let validatorReward;
+    let treasuryReward;
+
+    const rewardsInfo = await service.fetchRewards(3265992);
+    const blockData = await service.fetchBlockData(rewardsInfo.toString());
+
+    const {events} = blockData.onInitialize;
+
+    events.forEach((event) => {
+      if (event.method == 'staking.EraPayout') {
+        validatorReward = event.data[1];
+        treasuryReward = event.data[2];
+      }
+    });
+
+    console.log(`validatorReward ${validatorReward / 10 ** 10}`);
+    console.log(`treasuryReward ${treasuryReward / 10 ** 10}`);
   }
 }
