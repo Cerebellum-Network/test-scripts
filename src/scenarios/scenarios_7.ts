@@ -50,7 +50,7 @@ export class Scenarios_7 implements ScenarioInterface {
       const nominators = element.exposure.others.map((e) => {
         return {
           who: e.who.toString(),
-          value: e.value.toNumber() / 10 ** 10,
+          value: e.value.toNumber() / 10 ** CERE_DECIMAL,
         };
       });
       this.entity.push({
