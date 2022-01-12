@@ -385,4 +385,9 @@ export class SubstrateService {
           .catch((err) => reject(err));
     });
   }
+
+  public async fetchElectedInfo() {
+    const electedInfo = await this.substrateApi.derive.staking.electedInfo();
+    return electedInfo;
+  }
 }
