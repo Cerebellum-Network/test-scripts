@@ -22,6 +22,8 @@ export class Scenarios_7 implements ScenarioInterface {
   public validatorReward: number;
   public treasuryReward: number;
   public tokenPerPoint: number;
+  public eraIndex = +process.env.ERA_INDEX
+  public blockNumber = +process.env.BLOCK_NUMBER
 
   public async run() {
     this.logger.log(`Starting scenario 7...`);
@@ -31,7 +33,7 @@ export class Scenarios_7 implements ScenarioInterface {
     await service.initialize(cereTypes);
 
     await this.fetchValidatorAndNominator(service);
-    await this.eraRewards(service, 228);
+    await this.eraRewards(service, this.eraIndex);
     await this.fetchRewards(service);
 
     this.tokenPerPoint = this.validatorReward / 10 ** CERE_DECIMAL / Number(this.totalEraRewardPoints);
@@ -86,7 +88,7 @@ export class Scenarios_7 implements ScenarioInterface {
   }
 
   private async fetchRewards(service): Promise<any> {
-    const rewardsInfo = await service.fetchRewards(3265992);
+    const rewardsInfo = await service.fetchRewards(this.blockNumber);
     const blockData = await service.fetchBlockData(rewardsInfo.toString());
 
     const {events} = blockData.onInitialize;
