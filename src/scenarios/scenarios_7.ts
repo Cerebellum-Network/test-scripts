@@ -14,6 +14,7 @@ type EntityObject = {
   totalStake?: number;
   validatorEarning?: number;
 };
+
 export class Scenarios_7 implements ScenarioInterface {
   logger = new Logger(Scenarios_7.name);
 
@@ -22,8 +23,8 @@ export class Scenarios_7 implements ScenarioInterface {
   public validatorReward: number;
   public treasuryReward: number;
   public tokenPerPoint: number;
-  public eraIndex = +process.env.ERA_INDEX
-  public blockNumber = +process.env.BLOCK_NUMBER
+  public eraIndex = +process.env.ERA_INDEX;
+  public blockNumber = +process.env.BLOCK_NUMBER;
 
   public async run() {
     this.logger.log(`Starting scenario 7...`);
@@ -68,14 +69,14 @@ export class Scenarios_7 implements ScenarioInterface {
     this.totalEraRewardPoints = eraPoints.get('total');
     const validatorEraPoints = eraPoints.get('individual');
 
-    let obj = {}
+    let validatorEraRewardObj = {};
     validatorEraPoints.forEach((value, key) => {
-      const validator = key.toString()
-      obj[validator] = Number(value)
-    })
+      const validator = key.toString();
+      validatorEraRewardObj[validator] = Number(value);
+    });
 
     this.entity.map((e) => {
-      e.eraRewardPoint = obj[e.validator]
+      e.eraRewardPoint = validatorEraRewardObj[e.validator];
     });
   }
 
