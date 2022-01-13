@@ -40,7 +40,6 @@ export class Scenarios_7 implements ScenarioInterface {
     await this.calculate();
 
     this.logger.log(`Report ${JSON.stringify(this.entity)}`);
-    this.entity.forEach((e) => this.logger.log(JSON.stringify(e.nominators)));
   }
 
   private async fetchValidatorAndNominator(service): Promise<any> {
@@ -68,23 +67,16 @@ export class Scenarios_7 implements ScenarioInterface {
     const eraPoints = await service.fetchEraPoints(eraIndex);
     this.totalEraRewardPoints = eraPoints.get('total');
     const validatorEraPoints = eraPoints.get('individual');
-    // console.log(`validator ${validatorEraPoints}`)
 
-    // console.log(validatorEraPoints['5FyBTnGbqmVRcfnfCta5AotFrUD7JM9H3DMgsSH9LJHrsENq'])
-    // Object.entries(validatorEraPoints).forEach(item =>
-    //   console.log(`111 ${JSON.stringify(item)}`))
-
-    let points = 138960;
+    let obj = {}
+    validatorEraPoints.forEach((value, key) => {
+      const validator = key.toString()
+      obj[validator] = Number(value)
+    })
 
     this.entity.map((e) => {
-      if (e.validator === '5FyBTnGbqmVRcfnfCta5AotFrUD7JM9H3DMgsSH9LJHrsENq') {
-        e.eraRewardPoint = 138960;
-      } else {
-        e.eraRewardPoint = 141140;
-      }
+      e.eraRewardPoint = obj[e.validator]
     });
-
-    this.logger.log(JSON.stringify(this.entity));
   }
 
   private async fetchRewards(service): Promise<any> {
