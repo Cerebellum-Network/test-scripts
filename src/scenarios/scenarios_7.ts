@@ -33,17 +33,17 @@ export class Scenarios_7 implements ScenarioInterface {
     const service = new SubstrateService();
     await service.initialize(cereTypes);
 
-    await this.fetchValidatorAndNominator(service);
-    await this.eraRewards(service, this.eraIndex);
+    await this.fetchValidatorsAndNominators(service);
+    await this.fetchEraRewards(service, this.eraIndex);
     await this.fetchRewards(service);
 
     this.tokenPerPoint = this.validatorReward / 10 ** CERE_DECIMAL / Number(this.totalEraRewardPoints);
-    await this.calculate();
+    await this.calculateEarning();
 
     this.logger.log(`Report ${JSON.stringify(this.entity)}`);
   }
 
-  private async fetchValidatorAndNominator(service): Promise<any> {
+  private async fetchValidatorsAndNominators(service): Promise<any> {
     const electedInfo = await service.fetchElectedInfo();
     electedInfo.info.forEach((element) => {
       const validator = element.accountId.toString();
@@ -64,7 +64,7 @@ export class Scenarios_7 implements ScenarioInterface {
     });
   }
 
-  private async eraRewards(service, eraIndex): Promise<any> {
+  private async fetchEraRewards(service, eraIndex): Promise<any> {
     const eraPoints = await service.fetchEraPoints(eraIndex);
     this.totalEraRewardPoints = eraPoints.get('total');
     const validatorEraPoints = eraPoints.get('individual');
@@ -94,7 +94,7 @@ export class Scenarios_7 implements ScenarioInterface {
     });
   }
 
-  private async calculate() {
+  private async calculateEarning() {
     this.entity.map((e) => {
       const validatorPoolEarning = this.tokenPerPoint * e.eraRewardPoint;
       e.validatorPoolEarning = validatorPoolEarning;
