@@ -391,7 +391,7 @@ export class SubstrateService {
     return info;
   }
 
-  public async fetchRewards(blockNumber) {
+  public async fetchBlockHash(blockNumber) {
     const blockHash = await this.substrateApi.rpc.chain.getBlockHash(blockNumber);
     return blockHash
   }
