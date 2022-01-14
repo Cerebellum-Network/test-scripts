@@ -35,7 +35,7 @@ export class Scenarios_7 implements ScenarioInterface {
 
     await this.fetchValidatorsAndNominatorsInfo(service,this.eraIndex);
     await this.fetchEraRewards(service, this.eraIndex);
-    await this.fetchRewards(service);
+    await this.fetchInflationRewards(service);
 
     this.tokenPerPoint = this.validatorReward / 10 ** CERE_DECIMAL / Number(this.totalEraRewardPoints);
     await this.calculateEarning();
@@ -80,8 +80,8 @@ export class Scenarios_7 implements ScenarioInterface {
     });
   }
 
-  private async fetchRewards(service): Promise<any> {
-    const rewardsInfo = await service.fetchRewards(this.blockNumber);
+  private async fetchInflationRewards(service): Promise<any> {
+    const rewardsInfo = await service.fetchBlockHash(this.blockNumber);
     const blockData = await service.fetchBlockData(rewardsInfo.toString());
 
     const {events} = blockData.onInitialize;
