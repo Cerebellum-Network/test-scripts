@@ -386,9 +386,9 @@ export class SubstrateService {
     });
   }
 
-  public async fetchElectedInfo() {
-    const electedInfo = await this.substrateApi.derive.staking.electedInfo();
-    return electedInfo;
+  public async fetchValidatorsAndNominatorsInfo(eraIndex) {
+    const info = await this.substrateApi.derive.staking.eraExposure(eraIndex);
+    return info;
   }
 
   public async fetchRewards(blockNumber) {

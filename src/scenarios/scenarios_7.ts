@@ -33,7 +33,7 @@ export class Scenarios_7 implements ScenarioInterface {
     const service = new SubstrateService();
     await service.initialize(cereTypes);
 
-    await this.fetchValidatorsAndNominators(service);
+    await this.fetchValidatorsAndNominatorsInfo(service,this.eraIndex);
     await this.fetchEraRewards(service, this.eraIndex);
     await this.fetchRewards(service);
 
@@ -43,13 +43,13 @@ export class Scenarios_7 implements ScenarioInterface {
     this.logger.log(`Report ${JSON.stringify(this.entity)}`);
   }
 
-  private async fetchValidatorsAndNominators(service): Promise<any> {
-    const electedInfo = await service.fetchElectedInfo();
-    electedInfo.info.forEach((element) => {
-      const validator = element.accountId.toString();
-      const vs = Number(element.exposure.own) / 10 ** CERE_DECIMAL;
-      const totalStake = Number(element.exposure.total) / 10 ** CERE_DECIMAL;
-      const nominators = element.exposure.others.map((e) => {
+  private async fetchValidatorsAndNominatorsInfo(service, eraIndex): Promise<any> {
+    const {validators} = await service.fetchValidatorsAndNominatorsInfo(eraIndex);
+    for (const validator in validators) {
+      const val = validator.toString();
+      const vs = Number(validators[validator].own) / 10 ** CERE_DECIMAL;
+      const totalStake = Number(validators[validator].total) / 10 ** CERE_DECIMAL;
+      const nominators = validators[validator].others.map((e) => {
         return {
           who: e.who.toString(),
           value: e.value.toNumber() / 10 ** CERE_DECIMAL,
@@ -61,7 +61,7 @@ export class Scenarios_7 implements ScenarioInterface {
         validatorStake: vs,
         totalStake: totalStake,
       });
-    });
+    }
   }
 
   private async fetchEraRewards(service, eraIndex): Promise<any> {
