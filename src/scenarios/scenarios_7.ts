@@ -38,7 +38,7 @@ export class Scenarios_7 implements ScenarioInterface {
     await this.fetchInflationRewards(service);
 
     this.tokenPerPoint = this.validatorReward / 10 ** CERE_DECIMAL / Number(this.totalEraRewardPoints);
-    await this.calculateEarning();
+    await this.calculateEarnings();
 
     this.logger.log(`Report ${JSON.stringify(this.entity)}`);
   }
@@ -46,8 +46,7 @@ export class Scenarios_7 implements ScenarioInterface {
   private async fetchValidatorsAndNominatorsInfo(service, eraIndex): Promise<any> {
     const {validators} = await service.fetchValidatorsAndNominatorsInfo(eraIndex);
     for (const validator in validators) {
-      const val = validator.toString();
-      const vs = Number(validators[validator].own) / 10 ** CERE_DECIMAL;
+      const validatorStake = Number(validators[validator].own) / 10 ** CERE_DECIMAL;
       const totalStake = Number(validators[validator].total) / 10 ** CERE_DECIMAL;
       const nominators = validators[validator].others.map((e) => {
         return {
@@ -58,7 +57,7 @@ export class Scenarios_7 implements ScenarioInterface {
       this.entity.push({
         validator,
         nominators: nominators,
-        validatorStake: vs,
+        validatorStake: validatorStake,
         totalStake: totalStake,
       });
     }
@@ -94,7 +93,7 @@ export class Scenarios_7 implements ScenarioInterface {
     });
   }
 
-  private async calculateEarning() {
+  private async calculateEarnings() {
     this.entity.map((e) => {
       const validatorPoolEarning = this.tokenPerPoint * e.eraRewardPoint;
       e.validatorPoolEarning = validatorPoolEarning;
