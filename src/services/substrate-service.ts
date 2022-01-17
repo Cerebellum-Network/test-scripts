@@ -12,6 +12,7 @@ import {IssueRestrictiveTime} from "../model/restrictive-asset-time";
 import Logger from "./../services/logger";
 import {blake2AsU8a} from "@polkadot/util-crypto";
 import {GenericEventData} from "@polkadot/types";
+import { getSpecTypes } from '@polkadot/types-known';
 
 const MNEMONIC_WORDS_COUNT = 15;
 
@@ -43,11 +44,11 @@ export class SubstrateService {
   }
 
   public initializeSmartContract() {
-    this.contract = new ContractPromise(
-        this.substrateApi,
-        assetSmartContractAbi,
-        process.env.SMART_CONTRACT_ADDRESS
-    );
+    // this.contract = new ContractPromise(
+    //     this.substrateApi,
+    //     assetSmartContractAbi,
+    //     process.env.SMART_CONTRACT_ADDRESS
+    // );
   }
 
   public initializeKeyring() {
@@ -346,11 +347,11 @@ export class SubstrateService {
             }
           }
 
-          extrinsic.events.push(sanitizedEvent);
+          // extrinsic.events.push(sanitizedEvent);
         } else if (phase.isFinalization) {
-          onFinalize.events.push(sanitizedEvent);
+          // onFinalize.events.push(sanitizedEvent);
         } else if (phase.isInitialization) {
-          onInitialize.events.push(sanitizedEvent);
+          // onInitialize.events.push(sanitizedEvent);
         }
       }
     }
@@ -384,5 +385,23 @@ export class SubstrateService {
           })
           .catch((err) => reject(err));
     });
+  }
+
+  public async updateMeta(blockHash: string): Promise<void> {
+    const runtimeVersion = await this.substrateApi.rpc.state.getRuntimeVersion(blockHash);
+    console.log(`Runtime version is ${runtimeVersion}`);
+
+    const meta = await this.substrateApi.rpc.state.getMetadata(blockHash);
+
+    const chain = await this.substrateApi.rpc.system.chain();
+    const t = getSpecTypes(
+        this.substrateApi.registry,
+        chain,
+        runtimeVersion.specName,
+        runtimeVersion.specVersion);
+    this.substrateApi.registerTypes(
+
+    );
+    this.substrateApi.registry.setMetadata(meta);
   }
 }
