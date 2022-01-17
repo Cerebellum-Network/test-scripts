@@ -385,4 +385,19 @@ export class SubstrateService {
           .catch((err) => reject(err));
     });
   }
+
+  public async fetchValidatorsAndNominatorsInfo(eraIndex) {
+    const info = await this.substrateApi.derive.staking.eraExposure(eraIndex);
+    return info;
+  }
+
+  public async fetchBlockHash(blockNumber) {
+    const blockHash = await this.substrateApi.rpc.chain.getBlockHash(blockNumber);
+    return blockHash
+  }
+
+  public async fetchEraPoints(eraIndex) {
+    const eraPoints = await this.substrateApi.query.staking.erasRewardPoints(eraIndex);
+    return eraPoints
+  }
 }
