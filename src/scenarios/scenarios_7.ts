@@ -43,6 +43,9 @@ export class Scenarios_7 implements ScenarioInterface {
     this.tokenPerPoint = this.validatorReward / 10 ** CERE_DECIMAL / Number(this.totalEraRewardPoints);
     await this.calculateEarnings();
 
+    this.logger.log(`Era Index ${this.eraIndex}`);
+    this.logger.log(`Treasury reward ${this.treasuryReward}`);
+    this.logger.log(`Validator reward ${this.validatorReward}`);
     this.logger.log(`Report ${JSON.stringify(this.entity)}`);
   }
 
@@ -114,7 +117,7 @@ export class Scenarios_7 implements ScenarioInterface {
       const earnedTokenPerStakedToken = e.validatorPoolEarningWithoutCommission / e.totalStake;
       e.earnedTokenPerStakedToken = earnedTokenPerStakedToken;
       const validatorEarning = e.validatorStake * e.earnedTokenPerStakedToken;
-      e.validatorEarning = validatorEarning + e.validatorCommissionEarning
+      e.validatorEarning = validatorEarning + e.validatorCommissionEarning;
 
       e.nominators.map((nominator) => {
         const earned = nominator.value * e.earnedTokenPerStakedToken;
