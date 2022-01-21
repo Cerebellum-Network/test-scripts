@@ -68,6 +68,22 @@ Scenario 5 contains implementation of submitting of data transaction.
 Run fifth scenario using command:
 ```bash
 docker-compose up scenario_5
+``` 
+**Scenario 6: Tokens transfer.**
+
+Scenario 6 contains implementation of tokens transferring.
+
+Run sixth scenario using command:
+```bash
+docker-compose up scenario_6
+``` 
+**Scenario 7: Calculate inflation-based rewards.**
+
+Scenario 7 contains implementation of inflation based rewards for validators and nominators in Era calculations.
+
+Run seventh scenario using command:
+```bash
+docker-compose up scenario_7
 ```
 # Known issues
 1. If you're going to execute `scenario 5` with [private-standalone-network-node](https://github.com/Cerebellum-Network/private-standalone-network-node) the DDC-pallet name should be returned back to `templateModule` by reverting commit `40f5ae1d`.
