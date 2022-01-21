@@ -14,6 +14,7 @@ import {blake2AsU8a} from "@polkadot/util-crypto";
 import {GenericEventData} from "@polkadot/types";
 
 const MNEMONIC_WORDS_COUNT = 15;
+const PERCENTAGE_DECIMAL = 10000000;
 
 export interface ISanitizedEvent {
   method: string;
@@ -399,5 +400,10 @@ export class SubstrateService {
   public async fetchEraPoints(eraIndex) {
     const eraPoints = await this.substrateApi.query.staking.erasRewardPoints(eraIndex);
     return eraPoints
+  }
+
+  public async fetchValidatorsCommission(eraIndex, validatorId) {
+    const { commission } = await this.substrateApi.query.staking.erasValidatorPrefs(eraIndex, validatorId);
+    return +commission / PERCENTAGE_DECIMAL
   }
 }

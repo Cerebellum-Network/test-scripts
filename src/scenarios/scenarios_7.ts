@@ -9,10 +9,13 @@ type EntityObject = {
   validatorStake?: number;
   nominators?: {who: string; value: number; earned: number}[];
   eraRewardPoint?: number;
-  validatorPoolEarning?: number;
+  validatorTotalPoolEarning?: number;
+  validatorCommissionEarning?: number;
+  validatorPoolEarningWithoutCommission?: number;
   earnedTokenPerStakedToken?: number;
   totalStake?: number;
   validatorEarning?: number;
+  commission?: number;
 };
 
 export class Scenarios_7 implements ScenarioInterface {
@@ -33,7 +36,7 @@ export class Scenarios_7 implements ScenarioInterface {
     const service = new SubstrateService();
     await service.initialize(cereTypes);
 
-    await this.fetchValidatorsAndNominatorsInfo(service,this.eraIndex);
+    await this.fetchValidatorsAndNominatorsInfo(service, this.eraIndex);
     await this.fetchEraRewards(service, this.eraIndex);
     await this.fetchInflationRewards(service);
 
@@ -48,6 +51,7 @@ export class Scenarios_7 implements ScenarioInterface {
     for (const validator in validators) {
       const validatorStake = Number(validators[validator].own) / 10 ** CERE_DECIMAL;
       const totalStake = Number(validators[validator].total) / 10 ** CERE_DECIMAL;
+      const commission = await service.fetchValidatorsCommission(this.eraIndex, validator);
       const nominators = validators[validator].others.map((e) => {
         return {
           who: e.who.toString(),
@@ -59,6 +63,7 @@ export class Scenarios_7 implements ScenarioInterface {
         nominators: nominators,
         validatorStake: validatorStake,
         totalStake: totalStake,
+        commission: commission,
       });
     }
   }
@@ -96,11 +101,20 @@ export class Scenarios_7 implements ScenarioInterface {
   private async calculateEarnings() {
     this.entity.map((e) => {
       const validatorPoolEarning = this.tokenPerPoint * e.eraRewardPoint;
-      e.validatorPoolEarning = validatorPoolEarning;
-      const earnedTokenPerStakedToken = validatorPoolEarning / e.totalStake;
+      e.validatorTotalPoolEarning = validatorPoolEarning;
+
+      if (e.commission > 0) {
+        e.validatorCommissionEarning = validatorPoolEarning * (e.commission / 100);
+        e.validatorPoolEarningWithoutCommission = e.validatorTotalPoolEarning - e.validatorCommissionEarning;
+      } else {
+        e.validatorCommissionEarning = 0;
+        e.validatorPoolEarningWithoutCommission = e.validatorTotalPoolEarning;
+      }
+
+      const earnedTokenPerStakedToken = e.validatorPoolEarningWithoutCommission / e.totalStake;
       e.earnedTokenPerStakedToken = earnedTokenPerStakedToken;
       const validatorEarning = e.validatorStake * e.earnedTokenPerStakedToken;
-      e.validatorEarning = validatorEarning;
+      e.validatorEarning = validatorEarning + e.validatorCommissionEarning
 
       e.nominators.map((nominator) => {
         const earned = nominator.value * e.earnedTokenPerStakedToken;
