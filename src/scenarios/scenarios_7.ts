@@ -2,6 +2,8 @@ import {ScenarioInterface} from './scenario-interface';
 import Logger from '../services/logger';
 import {SubstrateService} from '../services/substrate-service';
 import cereTypes from './cere-network-type.json';
+import {formatBalance} from '@polkadot/util';
+import {Decimal} from 'decimal.js';
 const CERE_DECIMAL = 10;
 
 type EntityObject = {
@@ -44,8 +46,8 @@ export class Scenarios_7 implements ScenarioInterface {
     await this.calculateEarnings();
 
     this.logger.log(`Era Index ${this.eraIndex}`);
-    this.logger.log(`Treasury reward ${this.treasuryReward}`);
-    this.logger.log(`Validator reward ${this.validatorReward}`);
+    this.logger.log(`Treasury reward ${formatBalance(this.treasuryReward, {decimals: CERE_DECIMAL})}`);
+    this.logger.log(`Validator reward ${formatBalance(this.validatorReward, {decimals: CERE_DECIMAL})}`);
     this.logger.log(`Report ${JSON.stringify(this.entity)}`);
   }
 
@@ -55,10 +57,11 @@ export class Scenarios_7 implements ScenarioInterface {
       const validatorStake = Number(validators[validator].own) / 10 ** CERE_DECIMAL;
       const totalStake = Number(validators[validator].total) / 10 ** CERE_DECIMAL;
       const commission = await service.fetchValidatorsCommission(this.eraIndex, validator);
-      const nominators = validators[validator].others.map((e) => {
+      const nominators = validators[validator].others?.map((e) => {
+        const valueBigDecimal = new Decimal(e.value.toString());
         return {
           who: e.who.toString(),
-          value: e.value.toNumber() / 10 ** CERE_DECIMAL,
+          value: valueBigDecimal.dividedBy(new Decimal(10 ** CERE_DECIMAL)).toNumber(),
         };
       });
       this.entity.push({
