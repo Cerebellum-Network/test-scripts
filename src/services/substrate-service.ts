@@ -12,6 +12,8 @@ import {IssueRestrictiveTime} from "../model/restrictive-asset-time";
 import Logger from "./../services/logger";
 import {blake2AsU8a} from "@polkadot/util-crypto";
 import {GenericEventData} from "@polkadot/types";
+import {SubmittableExtrinsic} from "@polkadot/api/types";
+import {TransferDetails} from "../model/transfer-details";
 
 const MNEMONIC_WORDS_COUNT = 15;
 const PERCENTAGE_DECIMAL = 10000000;
@@ -405,5 +407,36 @@ export class SubstrateService {
   public async fetchValidatorsCommission(eraIndex, validatorId) {
     const { commission } = await this.substrateApi.query.staking.erasValidatorPrefs(eraIndex, validatorId);
     return +commission / PERCENTAGE_DECIMAL
+  }
+
+  public async sendTokensInBatchAndSignWithMultisig(from: KeyringPair, to: TransferDetails[], multisig: {threshold: number, otherSignatoriesPublicKeys: string[]}): Promise<void> {
+    const txs = [];
+    for (let i = 0; i < to.length; i++) {
+      let tx = this.substrateApi.tx.balances.transfer(to[i].destinationAddress, to[i].amount);
+      txs.push(tx);
+    }
+    const transferExtrinsic = this.substrateApi.tx.utility.batch(txs);
+    const transferExtrinsicCallDataHex = (transferExtrinsic as SubmittableExtrinsic<'promise'>).method.toHex();
+    console.log(`multisig call data is ${transferExtrinsicCallDataHex}`);
+    const transferExtrinsicCallHash = (transferExtrinsic as SubmittableExtrinsic<'promise'>).method.hash;
+    console.log(`call hash is ${transferExtrinsicCallHash}`);
+    const weight = 195000000;
+    const otherSignatories = [];
+    for (let i = 0; i < multisig.otherSignatoriesPublicKeys.length; i++) {
+      otherSignatories.push(this.substrateApi.createType('AccountId', multisig.otherSignatoriesPublicKeys[i]));
+    }
+    const multisigExtrinsic = this.substrateApi.tx.multisig.approveAsMulti(multisig.threshold, otherSignatories, null, transferExtrinsicCallHash, weight);
+
+    return new Promise((res, rej) => {
+      multisigExtrinsic
+          .signAndSend(from, ({ status }) => {
+            if (status.isInBlock) {
+              this.logger.log(`included in ${status.asInBlock}`);
+            } else if (status.isFinalized) {
+              res();
+            }
+          })
+          .catch((err) => rej(err));
+    });
   }
 }

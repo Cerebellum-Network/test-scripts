@@ -6,4 +6,5 @@ export enum ScenarioEnum {
   SCENARIO_5 = 'scenario_5',
   SCENARIO_6 = 'scenario_6',
   SCENARIO_7 = 'scenario_7',
+  SCENARIO_8 = 'scenario_8',
 }

@@ -85,6 +85,14 @@ Run seventh scenario using command:
 ```bash
 docker-compose up scenario_7
 ```
+**Scenario 8: Tokens distribution in batch transaction signed by multisig.**
+
+Scenario 8 contains implementation of tokens distribution in batch transaction signed by multisig.
+
+Run 8th scenario using command:
+```bash
+docker-compose up scenario_8
+```
 # Known issues
 1. If you're going to execute `scenario 5` with [private-standalone-network-node](https://github.com/Cerebellum-Network/private-standalone-network-node) the DDC-pallet name should be returned back to `templateModule` by reverting commit `40f5ae1d`.
 # License 
