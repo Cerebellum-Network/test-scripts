@@ -70,3 +70,12 @@ services:
     env_file:
       - ./.env
     command: node dist/index.js scenario_7
+  scenario_8:
+    container_name: scenario_8
+    image: test_scripts
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env
+    command: node dist/index.js scenario_8
