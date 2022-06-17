@@ -7,6 +7,7 @@ import {Scenarios_5} from "./scenarios/scenarios_5";
 import {Scenarios_6} from "./scenarios/scenarios_6";
 import {Scenarios_7} from "./scenarios/scenarios_7";
 import {Scenarios_8} from "./scenarios/scenarios_8";
+import {Scenarios_9} from "./scenarios/scenarios_9";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -59,6 +60,12 @@ dotenv.config();
 
     case ScenarioEnum.SCENARIO_8: {
       const scenario = new Scenarios_8();
+      await scenario.run();
+      break;
+    }
+
+    case ScenarioEnum.SCENARIO_9: {
+      const scenario = new Scenarios_9();
       await scenario.run();
       break;
     }

@@ -439,4 +439,24 @@ export class SubstrateService {
           .catch((err) => rej(err));
     });
   }
+
+  public async generateOfflineTransferTrx(from: KeyringPair, to: string, amount: number): Promise<string> {
+    const transferTx = this.substrateApi.tx.balances.transfer(to, amount);
+    const fromAccount = await this.substrateApi.query.system.account(from.address);
+
+    const signer = this.substrateApi.createType('SignerPayload', {
+      method: transferTx,
+      nonce: fromAccount.nonce,
+      genesisHash: this.substrateApi.genesisHash,
+      blockHash: this.substrateApi.genesisHash,
+      runtimeVersion: this.substrateApi.runtimeVersion,
+      version: this.substrateApi.extrinsicVersion
+    });
+
+    const {signature} = this.substrateApi.createType('ExtrinsicPayload', signer.toPayload(), {version: this.substrateApi.extrinsicVersion}).sign(from);
+
+    transferTx.addSignature(from.address, signature, signer.toPayload());
+
+    return transferTx.toJSON();
+  }
 }
