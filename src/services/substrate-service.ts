@@ -14,6 +14,7 @@ import {blake2AsU8a} from "@polkadot/util-crypto";
 import {GenericEventData} from "@polkadot/types";
 import {SubmittableExtrinsic} from "@polkadot/api/types";
 import {TransferDetails} from "../model/transfer-details";
+import type {IExtrinsic} from '@polkadot/types/types';
 
 const MNEMONIC_WORDS_COUNT = 15;
 const PERCENTAGE_DECIMAL = 10000000;
@@ -440,8 +441,8 @@ export class SubstrateService {
     });
   }
 
-  public async generateOfflineTransferTrx(from: KeyringPair, to: string, amount: number): Promise<string> {
-    const transferTx = this.substrateApi.tx.balances.transfer(to, amount);
+  public async generateOfflineTransferTrx(from: KeyringPair, to: string, amount: number): Promise<IExtrinsic> {
+    const transferTx = this.substrateApi.tx.balances.transferKeepAlive(to, amount);
     const fromAccount = await this.substrateApi.query.system.account(from.address);
 
     const signer = this.substrateApi.createType('SignerPayload', {
@@ -457,6 +458,22 @@ export class SubstrateService {
 
     transferTx.addSignature(from.address, signature, signer.toPayload());
 
-    return transferTx.toJSON();
+    return transferTx;
+  }
+
+  public async sendExtrinsic(extrinsic: IExtrinsic): Promise<boolean> {
+    return new Promise(async (res, rej) => {
+      try {
+        await this.substrateApi.rpc.author.submitAndWatchExtrinsic(extrinsic, (resp) => {
+          this.logger.log(JSON.stringify(resp));
+          if (resp.toString().indexOf('Finalized') > 0) {
+            res(true);
+          }
+        });
+      } catch (e) {
+        this.logger.error(e);
+        rej(e);
+      }
+    })
   }
 }

@@ -18,5 +18,6 @@ export class Scenarios_9 implements ScenarioInterface {
         const trx = await service.generateOfflineTransferTrx(keyringPair, to, 10000000000);
 
         this.logger.log(`Trx to send is ${trx}`);
+        await service.sendExtrinsic(trx);
     }
 }
