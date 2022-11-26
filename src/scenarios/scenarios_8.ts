@@ -20,7 +20,9 @@ export class Scenarios_8 implements ScenarioInterface {
         const keyring = new Keyring({ type: "sr25519" });
         const keyringPair = keyring.addFromMnemonic(process.env.SIGNATORY_1_MNEMONIC);
         const transferDetails = await this.getTransfersDetails();
-        const multisig = {threshold: 2, otherSignatoriesPublicKeys: [process.env.SIGNATORY_2_PUBLIC_KEY, process.env.SIGNATORY_3_PUBLIC_KEY]};
+        const threshold = +process.env.THRESHOLD;
+        const otherSignatoriesPublicKeys = process.env.OTHER_SIGNATORIES_PUBLIC_KEYS.split(',');
+        const multisig = {threshold: threshold, otherSignatoriesPublicKeys: otherSignatoriesPublicKeys};
 
         await service.sendTokensInBatchAndSignWithMultisig(keyringPair, transferDetails, multisig);
     }
